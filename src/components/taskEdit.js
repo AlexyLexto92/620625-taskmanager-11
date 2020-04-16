@@ -1,3 +1,4 @@
+import {createElement} from './utils.js';
 export const createTaskEditTemplate = ({color, description, repeatingDays, dueDate, tags}) => {
   return (
     `<article class="card card--edit card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
@@ -105,3 +106,25 @@ export const createTaskEditTemplate = ({color, description, repeatingDays, dueDa
     </article>`
   );
 };
+export default class TaskEdit {
+  constructor(task) {
+    this._task = task;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTaskEditTemplate(this._task);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

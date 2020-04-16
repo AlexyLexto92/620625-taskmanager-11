@@ -1,3 +1,4 @@
+import {createElement} from './utils.js';
 export const createTaskTemplate = ({
   description,
   dueDate,
@@ -6,8 +7,9 @@ export const createTaskTemplate = ({
   color,
   isFavorite,
   isArchive
-}) => (`
-   <article class="card card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
+}) =>{
+  return (
+    `<article class="card card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
       <div class="card__form">
          <div class="card__inner">
             <div class="card__control">
@@ -52,5 +54,25 @@ export const createTaskTemplate = ({
             </div>
          </div>
       </div>
-   </article>
-`);
+   </article>`);
+};
+
+export default class Task {
+  constructor(task) {
+    this._task = task;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTaskTemplate(this._task);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    } return this._element;
+  }
+  removeElement() {
+    this._element = null;
+  }
+}
