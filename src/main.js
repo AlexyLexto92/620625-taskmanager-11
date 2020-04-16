@@ -9,7 +9,7 @@ import {dataCards, filters} from './components/data.js';
 import {render, RenderPosition} from './components/utils.js';
 
 let task = {
-  start: 1,
+  start: 0,
   end: 8,
   step: 8,
 };
@@ -17,33 +17,32 @@ let task = {
 
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
-
 render(siteHeaderElement, new SiteMenu().getElement(), RenderPosition.BEFOREEND);
+
 render(siteMainElement, new Filter(filters).getElement(), RenderPosition.BEFOREEND);
 
 
 const renderTask = (taskListElement, card) => {
-  const taskComponent = new Task(card);
-  const taskEditComponent = new TaskEdit(card);
+
+  const taskComponent = new Task(card).getElement();
+  const taskEditComponent = new TaskEdit(card).getElement();
 
 
   const onEditButtonClick = () => {
-    taskListElement.replaceChild(taskEditComponent.getElement(), taskComponent.getElement());
+    taskListElement.replaceChild(taskEditComponent, taskComponent);
   };
 
   const onEditFormSubmit = (evt) => {
     evt.preventDefault();
-    taskListElement.replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
+    taskListElement.replaceChild(taskComponent, taskEditComponent);
   };
 
 
-  const editButton = taskComponent.getElement().querySelector(`.card__btn--edit`);
-  editButton.addEventListener(`click`, onEditButtonClick);
+  taskComponent.querySelector(`.card__btn--edit`).addEventListener(`click`, onEditButtonClick);
 
-  const editForm = taskEditComponent.getElement().querySelector(`form`);
-  editForm.addEventListener(`submit`, onEditFormSubmit);
+  taskEditComponent.addEventListener(`submit`, onEditFormSubmit);
 
-  render(taskListElement, taskComponent.getElement(), RenderPosition.BEFOREEND);
+  render(taskListElement, taskComponent, RenderPosition.BEFOREEND);
 };
 
 const renderBoard = (boardComponent, tasks) => {

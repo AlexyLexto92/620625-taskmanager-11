@@ -8,8 +8,8 @@ export const createTaskTemplate = ({
   isFavorite,
   isArchive
 }) =>{
-  return (`
-   <article class="card card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
+  return (
+    `<article class="card card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
       <div class="card__form">
          <div class="card__inner">
             <div class="card__control">
@@ -54,8 +54,7 @@ export const createTaskTemplate = ({
             </div>
          </div>
       </div>
-   </article>
-`);
+   </article>`);
 };
 
 export default class Task {
@@ -63,6 +62,7 @@ export default class Task {
     this._task = task;
     this._element = null;
   }
+
   getTemplate() {
     return createTaskTemplate(this._task);
   }
