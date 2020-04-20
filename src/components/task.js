@@ -1,4 +1,4 @@
-import {createElement} from './utils.js';
+import AbstractComponent from './abstrackt-component.js';
 export const createTaskTemplate = ({
   description,
   dueDate,
@@ -7,7 +7,7 @@ export const createTaskTemplate = ({
   color,
   isFavorite,
   isArchive
-}) =>{
+}) => {
   return (
     `<article class="card card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
       <div class="card__form">
@@ -57,22 +57,16 @@ export const createTaskTemplate = ({
    </article>`);
 };
 
-export default class Task {
+export default class Task extends AbstractComponent {
   constructor(task) {
+    super();
     this._task = task;
-    this._element = null;
   }
 
   getTemplate() {
     return createTaskTemplate(this._task);
   }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    } return this._element;
-  }
-  removeElement() {
-    this._element = null;
+  setEditButtonClickHendler(hendler) {
+    this.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, hendler);
   }
 }
