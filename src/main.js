@@ -7,6 +7,7 @@ import LoadMore from './components/loadMoreButton.js';
 import Sort from './components/sort.js';
 import {dataCards, filters} from './components/data.js';
 import {render, RenderPosition} from './components/utils.js';
+import NoTasks from './components/no-task.js';
 
 let task = {
   start: 0,
@@ -28,24 +29,44 @@ const renderTask = (taskListElement, card) => {
   const taskEditComponent = new TaskEdit(card).getElement();
 
 
-  const onEditButtonClick = () => {
+  const replaceTaskToEdit = () => {
     taskListElement.replaceChild(taskEditComponent, taskComponent);
   };
 
-  const onEditFormSubmit = (evt) => {
-    evt.preventDefault();
+  const replaceEditToTask = () => {
     taskListElement.replaceChild(taskComponent, taskEditComponent);
   };
 
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
-  taskComponent.querySelector(`.card__btn--edit`).addEventListener(`click`, onEditButtonClick);
+    if (isEscKey) {
+      replaceEditToTask();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
 
-  taskEditComponent.addEventListener(`submit`, onEditFormSubmit);
+  taskComponent.querySelector(`.card__btn--edit`).addEventListener(`click`, () => {
+    replaceTaskToEdit();
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
 
+  taskEditComponent.querySelector(`form`).addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceEditToTask();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
   render(taskListElement, taskComponent, RenderPosition.BEFOREEND);
 };
 
 const renderBoard = (boardComponent, tasks) => {
+
+  const isAllTasksArchived = tasks.every((card) => card.isArchive);
+
+  if (isAllTasksArchived) {
+    render(boardComponent.getElement(), new NoTasks().getElement(), RenderPosition.BEFOREEND);
+    return;
+  }
   render(boardComponent.getElement(), new Sort().getElement(), RenderPosition.AFTERBEGIN);
 
   const taskListElement = boardComponent.getElement().querySelector(`.board__tasks`);
