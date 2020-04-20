@@ -1,102 +1,20 @@
 import SiteMenu from './components/menu.js';
 import Filter from './components/filter.js';
 import Board from './components/board.js';
-import Task from './components/task.js';
-import TaskEdit from './components/taskEdit.js';
-import LoadMore from './components/loadMoreButton.js';
-import Sort from './components/sort.js';
 import {dataCards, filters} from './components/data.js';
 import {render, RenderPosition} from './components/utils.js';
-import NoTasks from './components/no-task.js';
-
-let task = {
-  start: 0,
-  end: 8,
-  step: 8,
-};
-
+import BoardController from './controllers/board.js';
 
 const siteMainElement = document.querySelector(`.main`);
 const siteHeaderElement = siteMainElement.querySelector(`.main__control`);
-render(siteHeaderElement, new SiteMenu().getElement(), RenderPosition.BEFOREEND);
 
-render(siteMainElement, new Filter(filters).getElement(), RenderPosition.BEFOREEND);
+render(siteHeaderElement, new SiteMenu(), RenderPosition.BEFOREEND);
 
+render(siteMainElement, new Filter(filters), RenderPosition.BEFOREEND);
 
-const renderTask = (taskListElement, card) => {
-
-  const taskComponent = new Task(card).getElement();
-  const taskEditComponent = new TaskEdit(card).getElement();
-
-
-  const replaceTaskToEdit = () => {
-    taskListElement.replaceChild(taskEditComponent, taskComponent);
-  };
-
-  const replaceEditToTask = () => {
-    taskListElement.replaceChild(taskComponent, taskEditComponent);
-  };
-
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replaceEditToTask();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    }
-  };
-
-  taskComponent.querySelector(`.card__btn--edit`).addEventListener(`click`, () => {
-    replaceTaskToEdit();
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
-
-  taskEditComponent.querySelector(`form`).addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
-    replaceEditToTask();
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  });
-  render(taskListElement, taskComponent, RenderPosition.BEFOREEND);
-};
-
-const renderBoard = (boardComponent, tasks) => {
-
-  const isAllTasksArchived = tasks.every((card) => card.isArchive);
-
-  if (isAllTasksArchived) {
-    render(boardComponent.getElement(), new NoTasks().getElement(), RenderPosition.BEFOREEND);
-    return;
-  }
-  render(boardComponent.getElement(), new Sort().getElement(), RenderPosition.AFTERBEGIN);
-
-  const taskListElement = boardComponent.getElement().querySelector(`.board__tasks`);
-
-  let sliceCards = tasks.slice(task.start, task.end);
-  sliceCards.forEach((card) => {
-    renderTask(taskListElement, card);
-  });
-
-  const loadMoreButtonComponent = new LoadMore();
-  render(boardComponent.getElement(), loadMoreButtonComponent.getElement(), RenderPosition.BEFOREEND);
-
-  const addCards = () => {
-    task.start = task.start + task.step;
-    task.end = task.start + task.step;
-    sliceCards = dataCards.slice(task.start, task.end);
-    for (let card of sliceCards) {
-      renderTask(taskListElement, card);
-    }
-    const cards = document.querySelectorAll(`.card`);
-    const cardsLength = Array.from(cards).length;
-    if (cardsLength >= dataCards.length - 1) {
-      loadMoreButtonComponent.getElement().remove();
-      loadMoreButtonComponent.removeElement();
-    }
-  };
-  loadMoreButtonComponent.getElement().addEventListener(`click`, addCards);
-};
 const boardComponent = new Board();
-render(siteMainElement, boardComponent.getElement(), RenderPosition.BEFOREEND);
-renderBoard(boardComponent, dataCards);
+const boardConroller = new BoardController(boardComponent);
+render(siteMainElement, boardComponent, RenderPosition.BEFOREEND);
+boardConroller.render(dataCards);
 
 

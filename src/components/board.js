@@ -1,4 +1,5 @@
-import {createElement} from './utils.js';
+import AbstractComponent from './abstrackt-component.js';
+
 export const createBoardTemplate = () => {
   return (
     `<section class="board container">
@@ -7,22 +8,12 @@ export const createBoardTemplate = () => {
   );
 };
 
-export default class Board {
+export default class Board extends AbstractComponent {
   constructor() {
-    this._element = null;
+    super();
   }
+
   getTemplate() {
     return createBoardTemplate();
-  }
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
