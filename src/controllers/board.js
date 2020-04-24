@@ -15,7 +15,7 @@ let task = {
 
 const renderTask = (taskListElement, card) => {
 
-  const taskComponent = new Task(card);
+/*   const taskComponent = new Task(card);
   const taskEditComponent = new TaskEdit(card);
 
 
@@ -44,7 +44,7 @@ const renderTask = (taskListElement, card) => {
     replaceEditToTask();
     document.removeEventListener(`keydown`, onEscKeyDown);
   });
-  render(taskListElement, taskComponent, RenderPosition.BEFOREEND);
+  render(taskListElement, taskComponent, RenderPosition.BEFOREEND); */
 };
 const getSortedTasks = (tasks, sortType, from, to) => {
   let sortedTasks = [];
