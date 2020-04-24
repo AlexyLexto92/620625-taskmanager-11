@@ -5,6 +5,7 @@ import Sort, {SortType} from '../components/sort.js';
 import {dataCards} from '../components/data.js';
 import {render, RenderPosition, replace, remove} from '../components/utils.js';
 import NoTasks from '../components/no-task.js';
+import TaskController from '../controllers/task.js';
 
 let task = {
   start: 0,
@@ -15,36 +16,36 @@ let task = {
 
 const renderTask = (taskListElement, card) => {
 
-/*   const taskComponent = new Task(card);
-  const taskEditComponent = new TaskEdit(card);
+  /*   const taskComponent = new Task(card);
+    const taskEditComponent = new TaskEdit(card);
 
 
-  const replaceTaskToEdit = () => {
-    replace(taskEditComponent, taskComponent);
-  };
+    const replaceTaskToEdit = () => {
+      replace(taskEditComponent, taskComponent);
+    };
 
-  const replaceEditToTask = () => {
-    replace(taskComponent, taskEditComponent);
-  };
+    const replaceEditToTask = () => {
+      replace(taskComponent, taskEditComponent);
+    };
 
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+    const onEscKeyDown = (evt) => {
+      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
-    if (isEscKey) {
+      if (isEscKey) {
+        replaceEditToTask();
+        document.removeEventListener(`keydown`, onEscKeyDown);
+      }
+    };
+    taskComponent.setEditButtonClickHendler(() => {
+      replaceTaskToEdit();
+      document.addEventListener(`keydown`, onEscKeyDown);
+    });
+
+    taskEditComponent.setSubmitButtonSave(() => {
       replaceEditToTask();
       document.removeEventListener(`keydown`, onEscKeyDown);
-    }
-  };
-  taskComponent.setEditButtonClickHendler(() => {
-    replaceTaskToEdit();
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
-
-  taskEditComponent.setSubmitButtonSave(() => {
-    replaceEditToTask();
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  });
-  render(taskListElement, taskComponent, RenderPosition.BEFOREEND); */
+    });
+    render(taskListElement, taskComponent, RenderPosition.BEFOREEND); */
 };
 const getSortedTasks = (tasks, sortType, from, to) => {
   let sortedTasks = [];
@@ -91,28 +92,53 @@ export default class BoardController {
     sliceCards.forEach((card) => {
       renderTask(taskListElement, card);
     });
-    render(container, this._loadMoreButtonComponent, RenderPosition.BEFOREEND);
-    const addCards = () => {
+    /*     render(container, this._loadMoreButtonComponent, RenderPosition.BEFOREEND);
+        const addCards = () => {
+          task.start = task.start + task.step;
+          task.end = task.start + task.step;
+          sliceCards = dataCards.slice(task.start, task.end);
+          for (let card of sliceCards) {
+            renderTask(taskListElement, card);
+          }
+          const cards = document.querySelectorAll(`.card`);
+          const cardsLength = Array.from(cards).length;
+          if (cardsLength >= dataCards.length - 1) {
+            remove(this._loadMoreButtonComponent);
+          }
+        };
+        this._loadMoreButtonComponent.setClickHendler(addCards); */
+    /*
+        this._sort.setSortTypeChangeHandler((sortType) => {
+          const sortedTasks = getSortedTasks(tasks, sortType, 0, task.end);
+          taskListElement.innerHTML = ``;
+          sortedTasks.slice(0, task.end).forEach((card) => {
+            renderTask(taskListElement, card);
+          });
+        }); */
+  }
+  _renderLoadMoreButton() {
+    render(this._container, this._loadMoreButtonComponent, RenderPosition.BEFOREEND);
+
+
+    this._loadMoreButtonComponent.setClickHendler(() => {
       task.start = task.start + task.step;
       task.end = task.start + task.step;
-      sliceCards = dataCards.slice(task.start, task.end);
+      let sliceCards = dataCards.slice(task.start, task.end);
       for (let card of sliceCards) {
         renderTask(taskListElement, card);
       }
       const cards = document.querySelectorAll(`.card`);
       const cardsLength = Array.from(cards).length;
-      if (cardsLength >= dataCards.length - 1) {
+      if (cardsLength >= tasks.length - 1) {
         remove(this._loadMoreButtonComponent);
       }
-    };
-    this._loadMoreButtonComponent.setClickHendler(addCards);
-
-    this._sort.setSortTypeChangeHandler((sortType)=>{
-      const sortedTasks = getSortedTasks(tasks, sortType, 0, task.end);
-      taskListElement.innerHTML = ``;
-      sortedTasks.slice(0, task.end).forEach((card) => {
-        renderTask(taskListElement, card);
-      });
+    });
+  }
+  _onSortTypeChange(sortType) {
+    const sortedTasks = getSortedTasks(tasks, sortType, 0, task.end);
+    taskListElement.innerHTML = ``;
+    sortedTasks.slice(0, task.end).forEach((card) => {
+      renderTask(taskListElement, card);
     });
   }
 }
