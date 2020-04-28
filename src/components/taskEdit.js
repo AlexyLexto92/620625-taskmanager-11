@@ -1,4 +1,5 @@
 import AbstractComponent from './abstrackt-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 export const createTaskEditTemplate = ({color, description, repeatingDays, dueDate, tags}) => {
   return (
     `<article class="card card--edit card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
@@ -106,16 +107,53 @@ export const createTaskEditTemplate = ({color, description, repeatingDays, dueDa
     </article>`
   );
 };
-export default class TaskEdit extends AbstractComponent {
+export default class TaskEdit extends AbstractSmartComponent {
   constructor(task) {
     super();
     this._task = task;
+    this._setSubmitButtonSave = null;
+    /* this._subscribeOnEvents(); */
   }
 
   getTemplate() {
     return createTaskEditTemplate(this._task);
   }
+  recoveryListeners() {
+    this.setSubmitHandler(this._submitHandler);
+    this._subscribeOnEvents();
+  }
+
+  rerender() {
+    super.rerender();
+  }
   setSubmitButtonSave(hendler) {
     this.getElement().querySelector(`form`).addEventListener(`submit`, hendler);
+    this._setSubmitButtonSave = hendler;
+  }
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelector(`.card__date-deadline-toggle`)
+      .addEventListener(`click`, () => {
+        this._isDateShowing = !this._isDateShowing;
+
+        this.rerender();
+      });
+
+    element.querySelector(`.card__repeat-toggle`)
+      .addEventListener(`click`, () => {
+        this._isRepeatingTask = !this._isRepeatingTask;
+
+        this.rerender();
+      });
+
+    const repeatDays = element.querySelector(`.card__repeat-days`);
+    if (repeatDays) {
+      repeatDays.addEventListener(`change`, (evt) => {
+        this._activeRepeatingDays[evt.target.value] = evt.target.checked;
+
+        this.rerender();
+      });
+    }
   }
 }
